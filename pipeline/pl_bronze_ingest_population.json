@@ -152,7 +152,12 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"method": "POST"
+								"method": "POST",
+								"url": "https://www.enviodecorreo.com",
+								"body": {
+									"value": "@variables('ErrorMessage')",
+									"type": "Expression"
+								}
 							}
 						}
 					],
@@ -230,7 +235,7 @@
 								{
 									"activity": "Copy data to bronze",
 									"dependencyConditions": [
-										"Succeeded"
+										"Failed"
 									]
 								}
 							],
@@ -245,6 +250,30 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "Set ErrorMessage",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Copy Fail",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "ErrorMessage",
+								"value": {
+									"value": "@intersection(activity('Copy Fail').output.code, activity('Copy Fail').output.code)",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
@@ -253,6 +282,9 @@
 		"variables": {
 			"vDate": {
 				"type": "String"
+			},
+			"ErrorMessage": {
+				"type": "Array"
 			}
 		},
 		"annotations": []
