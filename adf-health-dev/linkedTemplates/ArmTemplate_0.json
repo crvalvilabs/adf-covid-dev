@@ -435,7 +435,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/trigger_bronze_copy')]",
+			"name": "[concat(parameters('factoryName'), '/trigger_copy_bronze')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -451,9 +451,9 @@
 				"type": "TumblingWindowTrigger",
 				"typeProperties": {
 					"frequency": "Minute",
-					"interval": 10,
-					"startTime": "2025-11-04T20:21:00Z",
-					"endTime": "2025-11-05T20:31:00Z",
+					"interval": 5,
+					"startTime": "2025-11-04T20:37:00Z",
+					"endTime": "2025-11-05T20:47:00Z",
 					"delay": "00:00:00",
 					"maxConcurrency": 50,
 					"retryPolicy": {
