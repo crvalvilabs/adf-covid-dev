@@ -5,6 +5,11 @@
 			"referenceName": "ls_dl_covid_reports",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"pFolderName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "bronze"
 		},
@@ -14,6 +19,10 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "population_by_age.tsv",
+				"folderPath": {
+					"value": "@dataset().pFolderName",
+					"type": "Expression"
+				},
 				"fileSystem": "bronze"
 			},
 			"columnDelimiter": "\t",
