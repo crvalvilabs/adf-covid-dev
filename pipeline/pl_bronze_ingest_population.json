@@ -4,9 +4,9 @@
 		"description": "Ingest data",
 		"activities": [
 			{
-				"name": "Copy data to bronze",
-				"description": "Copy data to bronze layer",
-				"type": "Copy",
+				"name": "Get Metadata",
+				"description": "Get Metadata to validate the copy data",
+				"type": "GetMetadata",
 				"dependsOn": [
 					{
 						"activity": "vDate",
@@ -17,83 +17,29 @@
 				],
 				"policy": {
 					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 300,
+					"retry": 360,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
+					"dataset": {
 						"referenceName": "ds_bronze_population_by_age_gz",
 						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists",
+						"columnCount"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_bronze_population_by_age",
-						"type": "DatasetReference",
-						"parameters": {
-							"pFolderName": {
-								"value": "@variables('vDate')",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
-				"name": "Get Metadata1",
-				"type": "GetMetadata",
-				"dependsOn": [
-					{
-						"activity": "Copy data to bronze",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
+				}
 			},
 			{
 				"name": "Find File",
@@ -141,24 +87,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"message": {
-						"value": "@activity('Find File').output",
+						"value": "@activity('Find File').output.message",
 						"type": "Expression"
 					},
-					"errorCode": "404"
-				}
-			},
-			{
-				"name": "Fail2",
-				"type": "Fail",
-				"dependsOn": [
-					{
-						"activity": "Copy data to bronze",
-						"dependencyConditions": [
-							"Failed"
-						]
+					"errorCode": {
+						"value": "@activity('Find File').output.code",
+						"type": "Expression"
 					}
-				],
-				"userProperties": []
+				}
 			},
 			{
 				"name": "vDate",
@@ -183,6 +119,134 @@
 						"value": "@concat('population/', string(formatDateTime(utcNow(), 'yyyy-MM-dd')))",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "If Condition",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@or(equals(activity('Get Metadata').output.columnCount, 13), activity('Get Metadata').output.exists)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "POST"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Copy data to bronze",
+							"description": "Copy data to bronze layer",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 300,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_bronze_population_by_age_gz",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_bronze_population_by_age",
+									"type": "DatasetReference",
+									"parameters": {
+										"pFolderName": {
+											"value": "@variables('vDate')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Copy Fail",
+							"description": "Register a error message during copy data",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "Copy data to bronze",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "@activity('Copy data to bronze').output.message",
+									"type": "Expression"
+								},
+								"errorCode": {
+									"value": "@activity('Copy data to bronze').output.code",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
