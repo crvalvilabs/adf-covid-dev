@@ -1,0 +1,29 @@
+{
+	"name": "ds_bronze_population_by_age_gz",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_covid_reporting",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "landing"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "population_by_age.tsv.gz",
+				"folderPath": "landing",
+				"container": "population"
+			},
+			"columnDelimiter": "\t",
+			"compressionCodec": "gzip",
+			"compressionLevel": "Optimal",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
