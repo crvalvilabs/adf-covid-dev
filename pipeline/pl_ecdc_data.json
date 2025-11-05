@@ -3,12 +3,12 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Web validation Error",
+				"name": "File Lookup Error",
 				"description": "Shows the error message and code",
 				"type": "Fail",
 				"dependsOn": [
 					{
-						"activity": "Check File Exists",
+						"activity": "Lookup",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -17,21 +17,52 @@
 				"userProperties": [],
 				"typeProperties": {
 					"message": {
-						"value": "@activity('Check File Exists').output.response",
+						"value": "@activity('Lookup').output.message",
 						"type": "Expression"
 					},
 					"errorCode": {
-						"value": "@activity('Check File Exists').output.ADFHttpStatusCodeInResponse",
+						"value": "@activity('Lookup').output.code",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "If Condition",
-				"type": "IfCondition",
+				"name": "Lookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_landing_ecdc_config",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach",
+				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Check File Exists",
+						"activity": "Lookup",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -39,29 +70,12 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"expression": {
-						"value": "@equals(activity('Check File Exists').output.ADFHttpStatusCodeInResponse, '200')",
+					"items": {
+						"value": "@activity('Lookup').output.value",
 						"type": "Expression"
 					},
-					"ifFalseActivities": [
-						{
-							"name": "IF Error",
-							"type": "Fail",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"message": {
-									"value": "@activity('Check File Exists').output.error",
-									"type": "Expression"
-								},
-								"errorCode": {
-									"value": "@activity('Check File Exists').output.code",
-									"type": "Expression"
-								}
-							}
-						}
-					],
-					"ifTrueActivities": [
+					"isSequential": true,
+					"activities": [
 						{
 							"name": "Copy data from ECDC",
 							"type": "Copy",
@@ -109,38 +123,33 @@
 							"inputs": [
 								{
 									"referenceName": "ds_landing_http_ecdc",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"pRelativeUrl": {
+											"value": "@item().sourceRelativeURL",
+											"type": "Expression"
+										},
+										"pSourceBaseUrl": {
+											"value": "@item().sourceBaseURL",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
 								{
 									"referenceName": "ds_bronze_ecdc_csv",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"pFileName": {
+											"value": "@item().sinkFileName",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
 					]
-				}
-			},
-			{
-				"name": "Check File Exists",
-				"type": "WebActivity",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"method": "GET",
-					"relativeUrl": "covid19/nationalcasedeath/csv"
-				},
-				"linkedServiceName": {
-					"referenceName": "ls_ecdc_data_validation",
-					"type": "LinkedServiceReference"
 				}
 			}
 		],
@@ -150,6 +159,14 @@
 			},
 			"pFileName": {
 				"type": "string"
+			},
+			"pSourceBaseUrl": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"vFiles": {
+				"type": "String"
 			}
 		},
 		"annotations": []
