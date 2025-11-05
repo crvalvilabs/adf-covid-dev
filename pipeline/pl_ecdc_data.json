@@ -148,6 +148,50 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "Validation",
+							"type": "Validation",
+							"dependsOn": [
+								{
+									"activity": "Copy data from ECDC",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "ds_bronze_ecdc_csv",
+									"type": "DatasetReference",
+									"parameters": {
+										"pFileName": {
+											"value": "@item().sinkFileName",
+											"type": "Expression"
+										}
+									}
+								},
+								"timeout": "0.00:10:00",
+								"sleep": 10
+							}
+						},
+						{
+							"name": "Fail Copy data",
+							"type": "Fail",
+							"dependsOn": [
+								{
+									"activity": "Copy data from ECDC",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Error copy data to sink",
+								"errorCode": "500"
+							}
 						}
 					]
 				}
