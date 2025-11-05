@@ -8,7 +8,7 @@
 				"type": "Fail",
 				"dependsOn": [
 					{
-						"activity": "Web",
+						"activity": "Check File Exists",
 						"dependencyConditions": [
 							"Failed"
 						]
@@ -17,11 +17,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"message": {
-						"value": "@activity('Web').output.message",
+						"value": "@activity('Check File Exists').output.response",
 						"type": "Expression"
 					},
 					"errorCode": {
-						"value": "@activity('Web').output.code",
+						"value": "@activity('Check File Exists').output.ADFHttpStatusCodeInResponse",
 						"type": "Expression"
 					}
 				}
@@ -31,7 +31,7 @@
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Web",
+						"activity": "Check File Exists",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -40,7 +40,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(activity('Web').output.code, 200)",
+						"value": "@equals(activity('Check File Exists').output.ADFHttpStatusCodeInResponse, '200')",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
@@ -51,11 +51,11 @@
 							"userProperties": [],
 							"typeProperties": {
 								"message": {
-									"value": "@activity('Web').output.message",
+									"value": "@activity('Check File Exists').output.error",
 									"type": "Expression"
 								},
 								"errorCode": {
-									"value": "@activity('Web').output.code",
+									"value": "@activity('Check File Exists').output.code",
 									"type": "Expression"
 								}
 							}
@@ -118,36 +118,12 @@
 									"type": "DatasetReference"
 								}
 							]
-						},
-						{
-							"name": "Copy Data Error",
-							"description": "Shows message error and code",
-							"type": "Fail",
-							"dependsOn": [
-								{
-									"activity": "Copy data from ECDC",
-									"dependencyConditions": [
-										"Failed"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"message": {
-									"value": "@activity('Copy data from ECDC').output.message",
-									"type": "Expression"
-								},
-								"errorCode": {
-									"value": "@activity('Copy data from ECDC').output.code",
-									"type": "Expression"
-								}
-							}
 						}
 					]
 				}
 			},
 			{
-				"name": "Web",
+				"name": "Check File Exists",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
