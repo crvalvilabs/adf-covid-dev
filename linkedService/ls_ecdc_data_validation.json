@@ -1,0 +1,12 @@
+{
+	"name": "ls_ecdc_data_validation",
+	"properties": {
+		"annotations": [],
+		"type": "WebConnection",
+		"typeProperties": {
+			"url": "https://opendata.ecdc.europa.eu/covid19/nationalcasedeath/csv",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
