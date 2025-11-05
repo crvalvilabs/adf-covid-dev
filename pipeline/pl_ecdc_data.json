@@ -108,13 +108,13 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_ecdc_raw_csv_http",
+									"referenceName": "ds_landing_http_ecdc",
 									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_cases_death_raw_csv",
+									"referenceName": "ds_bronze_ecdc_csv",
 									"type": "DatasetReference"
 								}
 							]
@@ -144,6 +144,14 @@
 				}
 			}
 		],
+		"parameters": {
+			"pRelativeUrl": {
+				"type": "string"
+			},
+			"pFileName": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
