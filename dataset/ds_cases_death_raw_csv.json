@@ -5,6 +5,11 @@
 			"referenceName": "ls_dl_covid_reports",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"pFileName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "bronze"
 		},
@@ -13,7 +18,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "cases_death.csv",
+				"fileName": {
+					"value": "@dataset().pFileName",
+					"type": "Expression"
+				},
 				"folderPath": "ecdc",
 				"fileSystem": "bronze"
 			},
