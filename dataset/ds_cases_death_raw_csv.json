@@ -8,6 +8,9 @@
 		"parameters": {
 			"pFileName": {
 				"type": "string"
+			},
+			"pFolderName": {
+				"type": "string"
 			}
 		},
 		"folder": {
@@ -22,7 +25,10 @@
 					"value": "@dataset().pFileName",
 					"type": "Expression"
 				},
-				"folderPath": "ecdc",
+				"folderPath": {
+					"value": "@dataset().pFolderName",
+					"type": "Expression"
+				},
 				"fileSystem": "bronze"
 			},
 			"columnDelimiter": ",",
