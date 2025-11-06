@@ -5,6 +5,9 @@
 			"referenceName": "ls_dl_covid_reports",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "bronze"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

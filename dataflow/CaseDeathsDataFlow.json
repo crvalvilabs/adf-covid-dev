@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "CaseDeathsDataFlow",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,13 +12,24 @@
 					"name": "CasesDeathsSource"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "CasesAndDeathsSink"
+				}
+			],
 			"transformations": [
 				{
-					"name": "EuropeFilter"
+					"name": "DropAndRenameColumns",
+					"description": "DropAndRenameColumns with columns 'country, country_code_2_digit, country_code, population, indicator, daily_count, source, reported_date'"
 				},
 				{
-					"name": "DropAndRenameColumns"
+					"name": "AddColumnCountry"
+				},
+				{
+					"name": "PivotCounts"
+				},
+				{
+					"name": "ContinentFilter"
 				}
 			],
 			"scriptLines": [
@@ -36,19 +47,35 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CasesDeathsSource",
-				"CasesDeathsSource filter(continent == 'Europe' && not(isNull(country_code))) ~> EuropeFilter",
-				"EuropeFilter select(mapColumn(",
+				"AddColumnCountry select(mapColumn(",
 				"          country,",
 				"          country_code,",
+				"          country_code_2_digit,",
 				"          population,",
 				"          indicator,",
 				"          daily_count,",
 				"          source,",
 				"          each(match(name == 'date'),",
-				"               'reported_date' = $$)",
+				"               'reported' + '_date' = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DropAndRenameColumns"
+				"     skipDuplicateMapOutputs: true) ~> DropAndRenameColumns",
+				"ContinentFilter derive(country_code_2_digit = substring(country_code, 1, 2)) ~> AddColumnCountry",
+				"DropAndRenameColumns pivot(groupBy(country,",
+				"          country_code,",
+				"          country_code_2_digit,",
+				"          population,",
+				"          source,",
+				"          reported_date),",
+				"     pivotBy(indicator, ['confirmed cases', 'deaths']),",
+				"     count = sum(daily_count),",
+				"     columnNaming: '$V_$N',",
+				"     lateral: false) ~> PivotCounts",
+				"CasesDeathsSource filter(trim(continent) == 'Europe') ~> ContinentFilter",
+				"PivotCounts sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> CasesAndDeathsSink"
 			]
 		}
 	}

@@ -1,0 +1,41 @@
+{
+	"name": "ds_landing_cases_deaths",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_covid_reports",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pFolderName": {
+				"type": "string"
+			},
+			"pFileName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "staging"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().pFileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().pFolderName",
+					"type": "Expression"
+				},
+				"fileSystem": "staging"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
