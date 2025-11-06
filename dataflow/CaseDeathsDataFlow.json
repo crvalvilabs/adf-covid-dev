@@ -14,6 +14,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "ds_staging_cases_deaths",
+						"type": "DatasetReference"
+					},
 					"name": "CasesAndDeathsSink"
 				}
 			],
@@ -74,6 +78,9 @@
 				"CasesDeathsSource filter(trim(continent) == 'Europe') ~> ContinentFilter",
 				"PivotCounts sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> CasesAndDeathsSink"
 			]
