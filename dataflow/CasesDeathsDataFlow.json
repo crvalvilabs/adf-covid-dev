@@ -1,5 +1,5 @@
 {
-	"name": "CaseDeathsDataFlow",
+	"name": "CasesDeathsDataFlow",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
