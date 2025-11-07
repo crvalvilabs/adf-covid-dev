@@ -32,14 +32,14 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_staging_hospital_admissions_weekly",
+						"referenceName": "ds_staging_admissions_weekly",
 						"type": "DatasetReference"
 					},
 					"name": "WeeklySink"
 				},
 				{
 					"dataset": {
-						"referenceName": "ds_staging_hospital_admissions_daily",
+						"referenceName": "ds_staging_admissions_daily",
 						"type": "DatasetReference"
 					},
 					"name": "DailySink"
@@ -224,17 +224,7 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectDailyColumns",
 				"SelectWeeklyColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          country as string,",
-				"          country_code as string,",
-				"          country_code_2_digit as string,",
-				"          population as string,",
-				"          source as string,",
-				"          reported_date as string,",
-				"          {confirmed cases_count} as string,",
-				"          deaths_count as string",
-				"     ),",
-				"     partitionFileNames:[('hospital_admissions_staging.csv' )],",
+				"     partitionFileNames:['weekly_admissions_staging.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
@@ -243,21 +233,13 @@
 				"     partitionBy('hash', 1)) ~> WeeklySink",
 				"SelectDailyColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          country as string,",
-				"          country_code as string,",
-				"          country_code_2_digit as string,",
-				"          population as string,",
-				"          source as string,",
-				"          reported_date as string,",
-				"          {confirmed cases_count} as string,",
-				"          deaths_count as string",
-				"     ),",
+				"     partitionFileNames:['daily_admissions_staging.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DailySink"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DailySink"
 			]
 		}
 	}
