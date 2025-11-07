@@ -24,13 +24,40 @@
 			"transformations": [
 				{
 					"name": "AddUpdateTimestamp"
+				},
+				{
+					"name": "RenameConfirmedCases"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          country as string,",
+				"          country_code as string,",
+				"          country_code_2_digit as string,",
+				"          population as integer,",
+				"          source as string,",
+				"          reported_date as date,",
+				"          {confirmed cases_count} as integer,",
+				"          deaths_count as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> CasesDeathsStagingFlow",
-				"CasesDeathsStagingFlow derive(Updated = currentUTC()) ~> AddUpdateTimestamp",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> CasesDeathsStagingFlow",
+				"RenameConfirmedCases derive(Updated = currentUTC()) ~> AddUpdateTimestamp",
+				"CasesDeathsStagingFlow select(mapColumn(",
+				"          country,",
+				"          country_code,",
+				"          country_code_2_digit,",
+				"          population,",
+				"          source,",
+				"          reported_date,",
+				"          confirmed_cases_count = {confirmed cases_count},",
+				"          deaths_count",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameConfirmedCases",
 				"AddUpdateTimestamp sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
