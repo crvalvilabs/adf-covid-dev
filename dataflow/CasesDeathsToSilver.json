@@ -1,6 +1,9 @@
 {
 	"name": "CasesDeathsToSilver",
 	"properties": {
+		"folder": {
+			"name": "CasesDeaths"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

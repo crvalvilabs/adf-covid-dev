@@ -1,0 +1,56 @@
+{
+	"name": "ds_bronze_hospital_admissions",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_covid_reports",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "landing"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "hospital_admissions.csv",
+				"folderPath": "ecdc",
+				"fileSystem": "bronze"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "country",
+				"type": "String"
+			},
+			{
+				"name": "indicator",
+				"type": "String"
+			},
+			{
+				"name": "date",
+				"type": "String"
+			},
+			{
+				"name": "year_week",
+				"type": "String"
+			},
+			{
+				"name": "value",
+				"type": "String"
+			},
+			{
+				"name": "source",
+				"type": "String"
+			},
+			{
+				"name": "url",
+				"type": "String"
+			}
+		]
+	}
+}
