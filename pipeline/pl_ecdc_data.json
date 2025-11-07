@@ -50,6 +50,10 @@
 							"type": "JsonReadSettings"
 						}
 					},
+					"dataset": {
+						"referenceName": "ds_landing_ecdc_config",
+						"type": "DatasetReference"
+					},
 					"firstRowOnly": false
 				}
 			},
