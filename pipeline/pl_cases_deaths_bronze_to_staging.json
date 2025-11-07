@@ -27,6 +27,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "CasesDeaths"
+		},
 		"annotations": []
 	}
 }
