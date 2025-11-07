@@ -1,0 +1,53 @@
+{
+	"name": "df_hospital_admissions_bronze_to_stagging",
+	"properties": {
+		"folder": {
+			"name": "HospitalAdmissions"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_hospital_admissions",
+						"type": "DatasetReference"
+					},
+					"name": "HospitalAdmissionSource"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "DropAndRenameColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          country as string,",
+				"          indicator as string,",
+				"          date as string,",
+				"          year_week as string,",
+				"          value as string,",
+				"          source as string,",
+				"          url as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> HospitalAdmissionSource",
+				"HospitalAdmissionSource select(mapColumn(",
+				"          country,",
+				"          indicator,",
+				"          reported_date = date,",
+				"          reported_year_week = year_week,",
+				"          value,",
+				"          source,",
+				"          url",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropAndRenameColumns"
+			]
+		}
+	}
+}
