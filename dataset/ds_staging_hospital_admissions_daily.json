@@ -1,5 +1,5 @@
 {
-	"name": "ds_staging_hospital_admissions_weekly",
+	"name": "ds_staging_hospital_admissions_daily",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_dl_covid_reports",
@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "weekly_admisssions_staging.csv",
+				"fileName": "daily_admissions_staging.csv",
 				"folderPath": "ecdc/hospital_admissions",
 				"fileSystem": "staging"
 			},
