@@ -22,7 +22,6 @@
 					"value": "@dataset().pFileName",
 					"type": "Expression"
 				},
-				"folderPath": "ecdc/cases_deaths",
 				"fileSystem": "bronze"
 			},
 			"columnDelimiter": ",",
