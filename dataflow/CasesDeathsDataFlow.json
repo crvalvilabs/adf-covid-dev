@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_bronze_ecdc_staging",
+						"referenceName": "ds_bronze_cases_deaths",
 						"type": "DatasetReference"
 					},
 					"name": "CasesDeathsSource"
