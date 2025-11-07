@@ -40,6 +40,10 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     pFolderName as string,",
+				"     pFileName as string",
+				"}",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> CasesDeathsSource",
@@ -63,7 +67,7 @@
 				"          population,",
 				"          source,",
 				"          reported_date),",
-				"     pivotBy(indicator, ['confirmed cases', 'deaths']),",
+				"     pivotBy(indicator, [confirmed cases, deaths]),",
 				"     count = sum(daily_count),",
 				"     columnNaming: '$V_$N',",
 				"     lateral: false) ~> PivotCounts",
