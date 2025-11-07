@@ -78,7 +78,7 @@
 				"CasesDeathsSource filter(trim(continent) == 'Europe') ~> ContinentFilter",
 				"PivotCounts sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:[''],",
+				"     partitionFileNames:['cases_deaths_staging.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
