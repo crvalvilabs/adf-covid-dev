@@ -5,7 +5,14 @@
 			{
 				"name": "CasesDeaths",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "vFileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -17,7 +24,17 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "CasesDeathsDataFlow",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"pFolderName": {
+								"value": "'@{variables('vFolderName')}'",
+								"type": "Expression"
+							},
+							"pFileName": {
+								"value": "'@{variables('vFileName')}'",
+								"type": "Expression"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -25,8 +42,57 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "vFileName",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "vFolderName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vFileName",
+					"value": {
+						"value": "@string('cases_deaths.csv')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "vFolderName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vFolderName",
+					"value": {
+						"value": "@string('ecdc/cases_deaths')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"vFileName": {
+				"type": "String"
+			},
+			"vFolderName": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "CasesDeaths"
 		},
