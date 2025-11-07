@@ -1,0 +1,45 @@
+{
+	"name": "CasesDeathsToSilver",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_staging_cases_deaths",
+						"type": "DatasetReference"
+					},
+					"name": "CasesDeathsStagingFlow"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_cases_deaths",
+						"type": "DatasetReference"
+					},
+					"name": "SilverSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AddUpdateTimestamp"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CasesDeathsStagingFlow",
+				"CasesDeathsStagingFlow derive(Updated = currentUTC()) ~> AddUpdateTimestamp",
+				"AddUpdateTimestamp sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SilverSink"
+			]
+		}
+	}
+}
