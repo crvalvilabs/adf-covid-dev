@@ -1,12 +1,12 @@
 {
-	"name": "ds_bronze_hospital_admissions",
+	"name": "ds_staging_hospital_admissions",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_dl_covid_reports",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "bronze"
+			"name": "staging"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
@@ -14,8 +14,8 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "hospital_admissions.csv",
-				"folderPath": "ecdc",
-				"fileSystem": "bronze"
+				"folderPath": "ecdc?hospital_admissions",
+				"fileSystem": "staging"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -28,19 +28,15 @@
 				"type": "String"
 			},
 			{
-				"name": "indicator",
+				"name": "country_code",
 				"type": "String"
 			},
 			{
-				"name": "date",
+				"name": "country_code_2_digit",
 				"type": "String"
 			},
 			{
-				"name": "year_week",
-				"type": "String"
-			},
-			{
-				"name": "value",
+				"name": "population",
 				"type": "String"
 			},
 			{
@@ -48,7 +44,15 @@
 				"type": "String"
 			},
 			{
-				"name": "url",
+				"name": "reported_date",
+				"type": "String"
+			},
+			{
+				"name": "confirmed cases_count",
+				"type": "String"
+			},
+			{
+				"name": "deaths_count",
 				"type": "String"
 			}
 		]
