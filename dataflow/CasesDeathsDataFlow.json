@@ -8,6 +8,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "ds_bronze_ecdc_csv",
+						"type": "DatasetReference"
+					},
 					"name": "CasesDeathsSource"
 				}
 			],
@@ -36,19 +40,9 @@
 				}
 			],
 			"scriptLines": [
-				"source(output(",
-				"          country as string,",
-				"          country_code as string,",
-				"          continent as string,",
-				"          population as integer,",
-				"          indicator as string,",
-				"          daily_count as integer,",
-				"          date as date,",
-				"          rate_14_day as double,",
-				"          source as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> CasesDeathsSource",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CasesDeathsSource",
 				"AddColumnCountry select(mapColumn(",
 				"          country,",
 				"          country_code,",
