@@ -16,7 +16,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "ds_bronze_hospital_admissions",
+						"referenceName": "ds_country_lookup",
 						"type": "DatasetReference"
 					},
 					"name": "CountrySource"
@@ -47,12 +47,10 @@
 				"     partitionBy('hash', 1)) ~> HospitalAdmissionSource",
 				"source(output(",
 				"          country as string,",
-				"          indicator as string,",
-				"          date as string,",
-				"          year_week as string,",
-				"          value as string,",
-				"          source as string,",
-				"          url as string",
+				"          country_code_2_digit as string,",
+				"          country_code_3_digit as string,",
+				"          continent as string,",
+				"          population as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
