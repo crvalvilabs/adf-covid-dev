@@ -1,0 +1,22 @@
+{
+	"name": "ds_landing_ecdc_config",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_covid_reporting",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "landing"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ecdc_routes.json",
+				"container": "config"
+			}
+		},
+		"schema": {}
+	}
+}
