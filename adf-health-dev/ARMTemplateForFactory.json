@@ -745,7 +745,7 @@
 							"value": "@dataset().pFileName",
 							"type": "Expression"
 						},
-						"folderPath": "ecdc",
+						"folderPath": "ecdc/cases_deaths",
 						"fileSystem": "bronze"
 					},
 					"columnDelimiter": ",",
@@ -777,7 +777,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "hospital_admissions.csv",
-						"folderPath": "ecdc",
+						"folderPath": "ecdc/hospital_admissions",
 						"fileSystem": "bronze"
 					},
 					"columnDelimiter": ",",
@@ -912,6 +912,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "country_lookup.csv",
+						"folderPath": "dim_country",
 						"fileSystem": "lookup"
 					},
 					"columnDelimiter": ",",
@@ -964,6 +965,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "dim_date.csv",
+						"folderPath": "dim_date",
 						"fileSystem": "lookup"
 					},
 					"columnDelimiter": ",",
@@ -1118,7 +1120,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "cases_deaths.csv",
-						"folderPath": "ecdc",
+						"folderPath": "ecdc/cases_deaths",
 						"fileSystem": "bronze"
 					},
 					"columnDelimiter": ",",
@@ -1207,6 +1209,9 @@
 					"referenceName": "ls_dl_covid_reports",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "staging"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -1234,6 +1239,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_dl_covid_reports",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "staging"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
