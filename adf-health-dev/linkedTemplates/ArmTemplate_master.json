@@ -21,11 +21,7 @@
 		},
 		"ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://opendata.ecdc.europa.eu/"
-		},
-		"ls_ecdc_data_validation_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://opendata.ecdc.europa.eu/"
+			"defaultValue": "@{linkedService().pSourceUrl}"
 		},
 		"containerUri": {
 			"type": "string",
@@ -65,13 +61,30 @@
 					},
 					"ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url": {
 						"value": "[parameters('ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url')]"
-					},
-					"ls_ecdc_data_validation_properties_typeProperties_url": {
-						"value": "[parameters('ls_ecdc_data_validation_properties_typeProperties_url')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "adf-health-dev_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-health-dev_ArmTemplate_0')]"
+			]
 		}
 	]
 }
