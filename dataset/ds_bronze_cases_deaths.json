@@ -1,17 +1,9 @@
 {
-	"name": "ds_bronze_ecdc_staging",
+	"name": "ds_bronze_cases_deaths",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_dl_covid_reports",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"pFolderName": {
-				"type": "string"
-			},
-			"pFileName": {
-				"type": "string"
-			}
 		},
 		"folder": {
 			"name": "bronze"
@@ -21,14 +13,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@dataset().pFileName",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().pFolderName",
-					"type": "Expression"
-				},
+				"fileName": "cases_deaths.csv",
+				"folderPath": "ecdc/cases_deaths",
 				"fileSystem": "bronze"
 			},
 			"columnDelimiter": ",",
