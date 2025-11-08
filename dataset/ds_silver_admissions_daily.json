@@ -1,0 +1,24 @@
+{
+	"name": "ds_silver_admissions_daily",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_covid_reports",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "silver"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "hospital_admissions_daily_silver.parquet",
+				"folderPath": "ecdc/hospital_admissions",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

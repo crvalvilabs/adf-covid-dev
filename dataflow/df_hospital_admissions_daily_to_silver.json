@@ -1,0 +1,48 @@
+{
+	"name": "df_hospital_admissions_daily_to_silver",
+	"properties": {
+		"folder": {
+			"name": "HospitalAdmissions"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_admissions_daily",
+						"type": "DatasetReference"
+					},
+					"name": "HospitalAdmissionsDailySource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_admissions_daily",
+						"type": "DatasetReference"
+					},
+					"name": "HospitalAdmissionsDailySink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet',",
+				"     wildcardPaths:['*.csv'],",
+				"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySource",
+				"HospitalAdmissionsDailySource sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['hospital_admissions_daily_silver.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySink"
+			]
+		}
+	}
+}
