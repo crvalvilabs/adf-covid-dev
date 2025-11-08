@@ -1,0 +1,46 @@
+{
+	"name": "df_hospital_admissions_weekly_to_silver",
+	"properties": {
+		"folder": {
+			"name": "HospitalAdmissions"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_staging_admissions_weekly",
+						"type": "DatasetReference"
+					},
+					"name": "WeeklyAdmissionsSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_admissions_weekly",
+						"type": "DatasetReference"
+					},
+					"name": "WeeklyAdmissionsSink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['*.csv']) ~> WeeklyAdmissionsSource",
+				"WeeklyAdmissionsSource sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     partitionFileNames:['hospital_admissions_weekly_silver.parquet'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> WeeklyAdmissionsSink"
+			]
+		}
+	}
+}
