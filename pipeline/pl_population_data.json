@@ -49,10 +49,12 @@
 					},
 					"fieldList": [
 						"exists",
-						"structure"
+						"structure",
+						"itemName"
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
