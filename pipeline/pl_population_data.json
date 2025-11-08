@@ -23,29 +23,6 @@
 				}
 			},
 			{
-				"name": "Population Error",
-				"type": "Fail",
-				"dependsOn": [
-					{
-						"activity": "Population Transformation",
-						"dependencyConditions": [
-							"Failed"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"message": {
-						"value": "@activity('Population Transformation').output.message",
-						"type": "Expression"
-					},
-					"errorCode": {
-						"value": "@activity('Population Transformation').output.code",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Get Metadata",
 				"description": "Get metadata from the file population.csv",
 				"type": "GetMetadata",
