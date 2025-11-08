@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "hospital_admissions_silver.parquet",
+				"fileName": "hospital_admissions_weekly_silver.parquet",
 				"folderPath": "ecdc/hospital_admissions",
 				"fileSystem": "silver"
 			},
