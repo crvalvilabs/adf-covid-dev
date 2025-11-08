@@ -1,5 +1,5 @@
 {
-	"name": "ds_staging_csv",
+	"name": "ds_staging_population",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_dl_covid_reports",
@@ -13,7 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "population.csv",
 				"folderPath": "population",
 				"fileSystem": "staging"
 			},
