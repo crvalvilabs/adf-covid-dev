@@ -1,0 +1,31 @@
+{
+	"name": "pl_population_data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Population Transformation",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/crvalvilabs@outlook.com/covid/population/population_transform"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_databricks_covid",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "PopulationByAge"
+		},
+		"annotations": []
+	}
+}
