@@ -13,10 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@first('*.csv')",
-					"type": "Expression"
-				},
 				"folderPath": "population",
 				"fileSystem": "staging"
 			},
