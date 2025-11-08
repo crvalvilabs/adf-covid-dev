@@ -1,5 +1,5 @@
 {
-	"name": "dl_staging_rename_csv",
+	"name": "ds_staging_rename_csv",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_dl_covid_reports",
