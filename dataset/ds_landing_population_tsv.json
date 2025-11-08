@@ -1,0 +1,27 @@
+{
+	"name": "ds_landing_population_tsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob_covid_reporting",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "landing"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "population_by_age.tsv",
+				"folderPath": "landing",
+				"container": "population"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
