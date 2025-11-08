@@ -8,11 +8,14 @@
 		"ls_blob_covid_reporting_connectionString": {
 			"value": ""
 		},
+		"ls_databricks_covid_accessToken": {
+			"value": ""
+		},
 		"ls_dl_covid_reports_accountKey": {
 			"value": ""
 		},
-		"ls_databricks_covid_accessToken": {
-			"value": ""
+		"ls_databricks_covid_properties_typeProperties_existingClusterId": {
+			"value": "1108-195709-ib22jogy"
 		},
 		"ls_dl_covid_reports_properties_typeProperties_url": {
 			"value": "https://dlcovidreports.dfs.core.windows.net/"

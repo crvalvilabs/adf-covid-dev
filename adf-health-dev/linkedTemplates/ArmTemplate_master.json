@@ -11,13 +11,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_blob_covid_reporting'"
 		},
+		"ls_databricks_covid_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'ls_databricks_covid'"
+		},
 		"ls_dl_covid_reports_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_dl_covid_reports'"
 		},
-		"ls_databricks_covid_accessToken": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accessToken' of 'ls_databricks_covid'"
+		"ls_databricks_covid_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "1108-195709-ib22jogy"
 		},
 		"ls_dl_covid_reports_properties_typeProperties_url": {
 			"type": "string",
@@ -57,11 +61,14 @@
 					"ls_blob_covid_reporting_connectionString": {
 						"value": "[parameters('ls_blob_covid_reporting_connectionString')]"
 					},
+					"ls_databricks_covid_accessToken": {
+						"value": "[parameters('ls_databricks_covid_accessToken')]"
+					},
 					"ls_dl_covid_reports_accountKey": {
 						"value": "[parameters('ls_dl_covid_reports_accountKey')]"
 					},
-					"ls_databricks_covid_accessToken": {
-						"value": "[parameters('ls_databricks_covid_accessToken')]"
+					"ls_databricks_covid_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('ls_databricks_covid_properties_typeProperties_existingClusterId')]"
 					},
 					"ls_dl_covid_reports_properties_typeProperties_url": {
 						"value": "[parameters('ls_dl_covid_reports_properties_typeProperties_url')]"

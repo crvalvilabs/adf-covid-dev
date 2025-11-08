@@ -11,13 +11,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_blob_covid_reporting'"
 		},
+		"ls_databricks_covid_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'ls_databricks_covid'"
+		},
 		"ls_dl_covid_reports_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_dl_covid_reports'"
 		},
-		"ls_databricks_covid_accessToken": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accessToken' of 'ls_databricks_covid'"
+		"ls_databricks_covid_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "1108-195709-ib22jogy"
 		},
 		"ls_dl_covid_reports_properties_typeProperties_url": {
 			"type": "string",
@@ -41,6 +45,24 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('ls_blob_covid_reporting_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_databricks_covid')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-4401013969711657.17.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('ls_databricks_covid_accessToken')]"
+					},
+					"existingClusterId": "[parameters('ls_databricks_covid_properties_typeProperties_existingClusterId')]"
 				}
 			},
 			"dependsOn": []
@@ -78,31 +100,6 @@
 					"url": "[parameters('ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ls_databricks_covid')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureDatabricks",
-				"typeProperties": {
-					"domain": "https://adb-4401013969711657.17.azuredatabricks.net",
-					"accessToken": {
-						"type": "SecureString",
-						"value": "[parameters('ls_databricks_covid_accessToken')]"
-					},
-					"newClusterNodeType": "Standard_DS3_v2",
-					"newClusterNumOfWorker": "1",
-					"newClusterSparkEnvVars": {
-						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
-					},
-					"newClusterVersion": "16.4.x-scala2.13",
-					"clusterOption": "Fixed",
-					"newClusterInitScripts": []
 				}
 			},
 			"dependsOn": []
