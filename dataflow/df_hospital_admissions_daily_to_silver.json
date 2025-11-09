@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_silver_admissions_daily",
+						"referenceName": "ds_staging_admissions_daily",
 						"type": "DatasetReference"
 					},
 					"name": "HospitalAdmissionsDailySource"
@@ -29,7 +29,6 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet',",
 				"     wildcardPaths:['*.csv'],",
 				"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySource",
 				"HospitalAdmissionsDailySource sink(allowSchemaDrift: true,",
