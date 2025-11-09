@@ -55,7 +55,7 @@
 				"          deaths_count as short",
 				"     ),",
 				"     format: 'parquet',",
-				"     partitionFileNames:['testing_silver.csv'],",
+				"     partitionFileNames:['testing_silver.parquet'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
