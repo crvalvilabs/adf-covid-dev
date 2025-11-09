@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "ecdc",
+				"folderPath": "ecdc/testing",
 				"fileSystem": "silver"
 			},
 			"compressionCodec": "snappy"
