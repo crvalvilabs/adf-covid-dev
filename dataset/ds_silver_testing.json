@@ -1,0 +1,56 @@
+{
+	"name": "ds_silver_testing",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_covid_reports",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "testing"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "ecdc",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "country",
+				"type": "UTF8"
+			},
+			{
+				"name": "country_code_3_digit",
+				"type": "UTF8"
+			},
+			{
+				"name": "country_code_2_digit",
+				"type": "UTF8"
+			},
+			{
+				"name": "population",
+				"type": "INT32"
+			},
+			{
+				"name": "source",
+				"type": "UTF8"
+			},
+			{
+				"name": "reported_date",
+				"type": "DATE"
+			},
+			{
+				"name": "cases_count",
+				"type": "INT32"
+			},
+			{
+				"name": "deaths_count",
+				"type": "INT_16"
+			}
+		]
+	}
+}

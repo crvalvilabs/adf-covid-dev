@@ -1,0 +1,66 @@
+{
+	"name": "df_testing_staging_silver",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_staging_testing",
+						"type": "DatasetReference"
+					},
+					"name": "TestingStagingSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_testing",
+						"type": "DatasetReference"
+					},
+					"name": "TestingSilverSink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          country as string,",
+				"          country_code_3_digit as string,",
+				"          country_code_2_digit as string,",
+				"          population as string,",
+				"          source as string,",
+				"          reported_date as string,",
+				"          {confirmed cases_count} as string,",
+				"          deaths_count as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['testing.csv']) ~> TestingStagingSource",
+				"TestingStagingSource sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          country as string,",
+				"          country_code_3_digit as string,",
+				"          country_code_2_digit as string,",
+				"          population as integer,",
+				"          source as string,",
+				"          reported_date as date,",
+				"          cases_count as integer,",
+				"          deaths_count as short",
+				"     ),",
+				"     format: 'parquet',",
+				"     partitionFileNames:['testing_silver.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TestingSilverSink"
+			]
+		}
+	}
+}

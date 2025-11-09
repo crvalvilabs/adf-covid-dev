@@ -1,0 +1,9 @@
+{
+	"name": "pl_testing_staging_silver",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"annotations": []
+	}
+}
