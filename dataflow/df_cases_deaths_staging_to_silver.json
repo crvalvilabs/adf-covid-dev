@@ -26,9 +26,6 @@
 			],
 			"transformations": [
 				{
-					"name": "AddUpdateTimestamp"
-				},
-				{
 					"name": "RenameConfirmedCases"
 				}
 			],
@@ -47,21 +44,20 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     partitionBy('hash', 1)) ~> CasesDeathsStagingFlow",
-				"RenameConfirmedCases derive(Updated = currentUTC()) ~> AddUpdateTimestamp",
 				"CasesDeathsStagingFlow select(mapColumn(",
 				"          country,",
-				"          country_code,",
+				"          country_code_3_digit = country_code,",
 				"          country_code_2_digit,",
 				"          population,",
 				"          source,",
 				"          reported_date,",
-				"          confirmed_cases_count = {confirmed cases_count},",
+				"          cases_count = {confirmed cases_count},",
 				"          deaths_count",
 				"     ),",
 				"     partitionBy('hash', 1),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> RenameConfirmedCases",
-				"AddUpdateTimestamp sink(allowSchemaDrift: true,",
+				"RenameConfirmedCases sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",
 				"     partitionFileNames:['cases_deaths_silver.parquet'],",
