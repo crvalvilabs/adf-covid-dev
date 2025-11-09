@@ -53,7 +53,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_azure_sql_server_covid",
+						"referenceName": "ds_azure_sql_cases_deaths",
 						"type": "DatasetReference"
 					}
 				]
