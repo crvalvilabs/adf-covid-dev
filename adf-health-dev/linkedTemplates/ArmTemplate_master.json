@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_dl_covid_reports'"
 		},
+		"sql_covid_dev_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql_covid_dev'"
+		},
 		"ls_databricks_covid_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "1108-195709-ib22jogy"
@@ -30,6 +34,18 @@
 		"ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().pSourceUrl}"
+		},
+		"sql_covid_dev_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-covid-dev.database.windows.net"
+		},
+		"sql_covid_dev_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqldb-covid"
+		},
+		"sql_covid_dev_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqladmin"
 		},
 		"containerUri": {
 			"type": "string",
@@ -67,6 +83,9 @@
 					"ls_dl_covid_reports_accountKey": {
 						"value": "[parameters('ls_dl_covid_reports_accountKey')]"
 					},
+					"sql_covid_dev_password": {
+						"value": "[parameters('sql_covid_dev_password')]"
+					},
 					"ls_databricks_covid_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('ls_databricks_covid_properties_typeProperties_existingClusterId')]"
 					},
@@ -75,6 +94,15 @@
 					},
 					"ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url": {
 						"value": "[parameters('ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url')]"
+					},
+					"sql_covid_dev_properties_typeProperties_server": {
+						"value": "[parameters('sql_covid_dev_properties_typeProperties_server')]"
+					},
+					"sql_covid_dev_properties_typeProperties_database": {
+						"value": "[parameters('sql_covid_dev_properties_typeProperties_database')]"
+					},
+					"sql_covid_dev_properties_typeProperties_userName": {
+						"value": "[parameters('sql_covid_dev_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -98,6 +126,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'adf-health-dev_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "adf-health-dev_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-health-dev_ArmTemplate_1')]"
 			]
 		}
 	]

@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_dl_covid_reports'"
 		},
+		"sql_covid_dev_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql_covid_dev'"
+		},
 		"ls_databricks_covid_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "1108-195709-ib22jogy"
@@ -30,6 +34,18 @@
 		"ls_http_opendata_ecdc_europa_eu_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{linkedService().pSourceUrl}"
+		},
+		"sql_covid_dev_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-covid-dev.database.windows.net"
+		},
+		"sql_covid_dev_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqldb-covid"
+		},
+		"sql_covid_dev_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqladmin"
 		}
 	},
 	"variables": {
@@ -793,6 +809,8 @@
 					{
 						"name": "Population Transformation",
 						"type": "DatabricksNotebook",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.00:10:00",
@@ -811,9 +829,8 @@
 						}
 					},
 					{
-						"name": "Get Metadata",
-						"description": "Get metadata from the file population.csv",
-						"type": "GetMetadata",
+						"name": "Copy data",
+						"type": "Copy",
 						"dependsOn": [
 							{
 								"activity": "Population Transformation",
@@ -831,24 +848,55 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataset": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "population",
+									"wildcardFileName": "part-*.csv",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
 								"referenceName": "ds_staging_population",
 								"type": "DatasetReference",
 								"parameters": {}
-							},
-							"fieldList": [
-								"exists",
-								"structure"
-							],
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"enablePartitionDiscovery": false
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
 							}
-						}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_silver_population",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -861,7 +909,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_databricks_covid')]",
-				"[concat(variables('factoryId'), '/datasets/ds_staging_population')]"
+				"[concat(variables('factoryId'), '/datasets/ds_staging_population')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_population')]"
 			]
 		},
 		{
@@ -1372,6 +1421,38 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_population')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_covid_reports",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "population.csv",
+						"folderPath": "population",
+						"fileSystem": "silver"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_covid_reports')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_staging_admissions_daily')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1482,7 +1563,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "population.csv",
 						"folderPath": "population",
 						"fileSystem": "staging"
 					},
@@ -2089,6 +2169,417 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_landing_population_tsv')]",
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_population_tsv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_sql_cases_deaths')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Cases and Deaths",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ecdc/cases_deaths",
+									"wildcardFileName": "*.parquet",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE covid_reporting.cases_and_deaths;",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_silver_cases_deaths",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_azure_sql_server_covid",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "CasesDeaths"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_cases_deaths')]",
+				"[concat(variables('factoryId'), '/datasets/ds_azure_sql_server_covid')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_admissions_weekly')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_covid_reports",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "hospital_admissions_weekly_silver.parquet",
+						"folderPath": "ecdc/hospital_admissions",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_covid_reports')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_hospital_admissions_weekly_to_silver')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "HospitalAdmissions"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_staging_admissions_weekly",
+								"type": "DatasetReference"
+							},
+							"name": "WeeklyAdmissionsSource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_admissions_weekly",
+								"type": "DatasetReference"
+							},
+							"name": "WeeklyAdmissionsSink"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     wildcardPaths:['ecdc/weekly_admissions/weekly_admissions_staging.csv']) ~> WeeklyAdmissionsSource",
+						"WeeklyAdmissionsSource sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     partitionFileNames:['hospital_admissions_weekly_silver.parquet'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> WeeklyAdmissionsSink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_staging_admissions_weekly')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_admissions_weekly')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_admissions_daily')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_covid_reports",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "hospital_admissions_daily_silver.parquet",
+						"folderPath": "ecdc/hospital_admissions",
+						"fileSystem": "silver"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_covid_reports')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_hospital_admissions_daily_to_silver')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "HospitalAdmissions"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_staging_admissions_daily",
+								"type": "DatasetReference"
+							},
+							"name": "HospitalAdmissionsDailySource"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_admissions_daily",
+								"type": "DatasetReference"
+							},
+							"name": "HospitalAdmissionsDailySink"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     wildcardPaths:['ecdc/daily_admissions/daily_admissions_staging.csv'],",
+						"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySource",
+						"HospitalAdmissionsDailySource sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'parquet',",
+						"     partitionFileNames:['hospital_admissions_daily_silver.parquet'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_staging_admissions_daily')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_admissions_daily')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_hospital_admission_staging_to_silver')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Daily Admissions Data Flow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_hospital_admissions_daily_to_silver",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"HospitalAdmissionsDailySource": {},
+									"HospitalAdmissionsDailySink": {}
+								},
+								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Weekly Admissions Data Flow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Daily Admissions Data Flow",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_hospital_admissions_weekly_to_silver",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"WeeklyAdmissionsSource": {},
+									"WeeklyAdmissionsSink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "HospitalAdmissions"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_hospital_admissions_daily_to_silver')]",
+				"[concat(variables('factoryId'), '/dataflows/df_hospital_admissions_weekly_to_silver')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_covid_dev')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sql_covid_dev_properties_typeProperties_server')]",
+					"database": "[parameters('sql_covid_dev_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('sql_covid_dev_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sql_covid_dev_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_azure_sql_server_covid')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_covid_dev",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "azure_sql"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "country",
+						"type": "varchar"
+					},
+					{
+						"name": "country_code_2_digit",
+						"type": "varchar"
+					},
+					{
+						"name": "country_code_3_digit",
+						"type": "varchar"
+					},
+					{
+						"name": "population",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "cases_count",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "deaths_count",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "reported_date",
+						"type": "date"
+					},
+					{
+						"name": "source",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "covid_reporting",
+					"table": "cases_and_deaths"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_covid_dev')]"
 			]
 		}
 	]
