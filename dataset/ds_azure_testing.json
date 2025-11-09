@@ -1,5 +1,5 @@
 {
-	"name": "sql_azure_testing",
+	"name": "ds_azure_testing",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "sql_covid_dev",
