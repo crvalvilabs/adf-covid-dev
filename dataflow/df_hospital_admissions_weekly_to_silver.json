@@ -29,7 +29,7 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     wildcardPaths:['*.csv']) ~> WeeklyAdmissionsSource",
+				"     wildcardPaths:['ecdc/weekly_admissions/weekly_admissions_staging.csv']) ~> WeeklyAdmissionsSource",
 				"WeeklyAdmissionsSource sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'parquet',",

@@ -29,6 +29,7 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['ecdc/daily_admissions/daily_admissions_staging.csv'],",
 				"     partitionBy('hash', 1)) ~> HospitalAdmissionsDailySource",
 				"HospitalAdmissionsDailySource sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
