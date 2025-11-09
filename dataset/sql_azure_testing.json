@@ -1,0 +1,19 @@
+{
+	"name": "sql_azure_testing",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_covid_dev",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "azure_sql"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "covid_reporting",
+			"table": "testing"
+		}
+	}
+}
