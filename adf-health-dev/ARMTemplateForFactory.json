@@ -381,7 +381,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "CasesDeathsDataFlow",
+								"referenceName": "df_cases_deaths_bronze_to_staging",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -415,7 +415,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/CasesDeathsDataFlow')]"
+				"[concat(variables('factoryId'), '/dataflows/df_cases_deaths_bronze_to_staging')]"
 			]
 		},
 		{
@@ -438,7 +438,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "CasesDeathsToSilver",
+								"referenceName": "df_cases_deaths_staging_to_silver",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -464,7 +464,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/CasesDeathsToSilver')]"
+				"[concat(variables('factoryId'), '/dataflows/df_cases_deaths_staging_to_silver')]"
 			]
 		},
 		{
@@ -1678,7 +1678,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CasesDeathsDataFlow')]",
+			"name": "[concat(parameters('factoryName'), '/df_cases_deaths_bronze_to_staging')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1738,7 +1738,7 @@
 						"     partitionBy('hash', 1)) ~> CasesDeathsSource",
 						"AddColumnCountry select(mapColumn(",
 						"          country,",
-						"          country_code,",
+						"          country_code_3_digit = country_code,",
 						"          country_code_2_digit,",
 						"          population,",
 						"          indicator,",
@@ -1751,7 +1751,7 @@
 						"     skipDuplicateMapOutputs: true) ~> DropAndRenameColumns",
 						"ContinentFilter derive(country_code_2_digit = substring(country_code, 1, 2)) ~> AddColumnCountry",
 						"DropAndRenameColumns pivot(groupBy(country,",
-						"          country_code,",
+						"          country_code_3_digit,",
 						"          country_code_2_digit,",
 						"          population,",
 						"          source,",
@@ -1779,7 +1779,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CasesDeathsToSilver')]",
+			"name": "[concat(parameters('factoryName'), '/df_cases_deaths_staging_to_silver')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1808,9 +1808,6 @@
 					],
 					"transformations": [
 						{
-							"name": "AddUpdateTimestamp"
-						},
-						{
 							"name": "RenameConfirmedCases"
 						}
 					],
@@ -1829,21 +1826,20 @@
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     partitionBy('hash', 1)) ~> CasesDeathsStagingFlow",
-						"RenameConfirmedCases derive(Updated = currentUTC()) ~> AddUpdateTimestamp",
 						"CasesDeathsStagingFlow select(mapColumn(",
 						"          country,",
-						"          country_code,",
+						"          country_code_3_digit = country_code,",
 						"          country_code_2_digit,",
 						"          population,",
 						"          source,",
 						"          reported_date,",
-						"          confirmed_cases_count = {confirmed cases_count},",
+						"          cases_count = {confirmed cases_count},",
 						"          deaths_count",
 						"     ),",
 						"     partitionBy('hash', 1),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> RenameConfirmedCases",
-						"AddUpdateTimestamp sink(allowSchemaDrift: true,",
+						"RenameConfirmedCases sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'parquet',",
 						"     partitionFileNames:['cases_deaths_silver.parquet'],",
@@ -2069,8 +2065,8 @@
 						"          reported_year_week,",
 						"          week_start,",
 						"          week_end,",
-						"          new_icu_occupancy_count = {Weekly new ICU admissions per 100k_count},",
-						"          new_hospital_occupancy_count = {Weekly new hospital admissions per 100k_count},",
+						"          icu_occupancy_count = {Weekly new ICU admissions per 100k_count},",
+						"          hospital_occupancy_count = {Weekly new hospital admissions per 100k_count},",
 						"          source",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
@@ -2081,8 +2077,8 @@
 						"          country_code_3_digit,",
 						"          population,",
 						"          reported_date,",
-						"          new_hospital_occupancy_count = {Daily hospital occupancy_count},",
-						"          new_icu_occupancy_count = {Daily ICU occupancy_count},",
+						"          hospital_occupancy_count = {Daily hospital occupancy_count},",
+						"          icu_occupancy_count = {Daily ICU occupancy_count},",
 						"          source",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
