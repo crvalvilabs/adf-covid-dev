@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "CasesDeathsToSilver",
+						"referenceName": "df_cases_deaths_staging_to_silver",
 						"type": "DataFlowReference"
 					},
 					"compute": {

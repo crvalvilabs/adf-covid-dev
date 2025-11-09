@@ -1,5 +1,5 @@
 {
-	"name": "CasesDeathsDataFlow",
+	"name": "df_cases_deaths_bronze_to_staging",
 	"properties": {
 		"folder": {
 			"name": "CasesDeaths"

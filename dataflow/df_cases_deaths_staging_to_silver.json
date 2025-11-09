@@ -1,5 +1,5 @@
 {
-	"name": "CasesDeathsToSilver",
+	"name": "df_cases_deaths_staging_to_silver",
 	"properties": {
 		"folder": {
 			"name": "CasesDeaths"
