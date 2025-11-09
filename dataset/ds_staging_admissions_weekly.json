@@ -13,6 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "weekly_admissions_staging.csv",
 				"folderPath": "ecdc/weekly_admissions",
 				"fileSystem": "staging"
 			},
