@@ -1,0 +1,166 @@
+{
+	"name": "df_testing_bronze_staging",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_testing",
+						"type": "DatasetReference"
+					},
+					"name": "TestingSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_country_lookup",
+						"type": "DatasetReference"
+					},
+					"name": "CountrySource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dim_date",
+						"type": "DatasetReference"
+					},
+					"name": "DimDateSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_staging_testing",
+						"type": "DatasetReference"
+					},
+					"name": "TestingSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookupCountry"
+				},
+				{
+					"name": "WeeklyYear"
+				},
+				{
+					"name": "AggDimDate"
+				},
+				{
+					"name": "RequiredColumns"
+				},
+				{
+					"name": "JoinDate"
+				},
+				{
+					"name": "OrderSelectedColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          country as string,",
+				"          country_code as string,",
+				"          year_week as string,",
+				"          new_cases as integer,",
+				"          tests_done as integer,",
+				"          population as integer,",
+				"          testing_rate as double,",
+				"          positivity_rate as double,",
+				"          testing_data_source as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TestingSource",
+				"source(output(",
+				"          country as string,",
+				"          country_code_2_digit as string,",
+				"          country_code_3_digit as string,",
+				"          continent as string,",
+				"          population as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CountrySource",
+				"source(output(",
+				"          date_key as string,",
+				"          date as string,",
+				"          year as string,",
+				"          month as string,",
+				"          day as string,",
+				"          day_name as string,",
+				"          day_of_year as string,",
+				"          week_of_month as string,",
+				"          week_of_year as string,",
+				"          month_name as string,",
+				"          year_month as string,",
+				"          year_week as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimDateSource",
+				"TestingSource, CountrySource lookup(TestingSource@country == CountrySource@country,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupCountry",
+				"DimDateSource derive(ec_dc_year_week = year + '-W' + lpad(week_of_year, 2, '0')) ~> WeeklyYear",
+				"WeeklyYear aggregate(groupBy(ec_dc_year_week),",
+				"     week_start = min(date),",
+				"          week_end = max(date)) ~> AggDimDate",
+				"lookupCountry select(mapColumn(",
+				"          country = TestingSource@country,",
+				"          year_week,",
+				"          new_cases,",
+				"          tests_done,",
+				"          population = TestingSource@population,",
+				"          testing_data_source,",
+				"          country = CountrySource@country,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          population = CountrySource@population",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RequiredColumns",
+				"RequiredColumns, AggDimDate join(year_week == ec_dc_year_week,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinDate",
+				"JoinDate select(mapColumn(",
+				"          country,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          year_week,",
+				"          week_start,",
+				"          week_end,",
+				"          new_cases,",
+				"          tests_done,",
+				"          population,",
+				"          testing_data_source",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> OrderSelectedColumns",
+				"OrderSelectedColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          country as string,",
+				"          country_code_3_digit as string,",
+				"          country_code_2_digit as string,",
+				"          population as string,",
+				"          source as string,",
+				"          reported_date as string,",
+				"          {confirmed cases_count} as string,",
+				"          deaths_count as string",
+				"     ),",
+				"     partitionFileNames:['testing.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TestingSink"
+			]
+		}
+	}
+}

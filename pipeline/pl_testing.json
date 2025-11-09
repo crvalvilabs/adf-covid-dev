@@ -3,31 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook1",
-				"type": "DatabricksNotebook",
+				"name": "Testing Data flow",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
-			},
-			{
-				"name": "Copy data1",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Notebook1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
+					"timeout": "0.00:10:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -35,50 +15,15 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
-			},
-			{
-				"name": "Notebook2",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "Copy data1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
-			},
-			{
-				"name": "Copy data2",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Notebook2",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"enableStaging": false
+					"dataflow": {
+						"referenceName": "df_testing_bronze_staging",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
 				}
 			}
 		],
