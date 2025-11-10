@@ -33,6 +33,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:['population/landing/population_by_age.tsv'],",
 				"     partitionBy('hash', 1)) ~> PopulationSource",
 				"PopulationSource sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
