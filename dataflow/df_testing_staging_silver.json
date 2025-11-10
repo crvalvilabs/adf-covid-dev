@@ -24,7 +24,11 @@
 					"name": "TestingSilverSink"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "RenameColumns"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          country as string,",
@@ -42,7 +46,21 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     wildcardPaths:['ecdc/testing/testing.csv']) ~> TestingStagingSource",
-				"TestingStagingSource sink(allowSchemaDrift: true,",
+				"TestingStagingSource select(mapColumn(",
+				"          country,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          year_week,",
+				"          week_start_date = week_start,",
+				"          week_end_date = week_end,",
+				"          new_cases,",
+				"          tests_done,",
+				"          population,",
+				"          testing_data_source",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RenameColumns",
+				"RenameColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          country as string,",
