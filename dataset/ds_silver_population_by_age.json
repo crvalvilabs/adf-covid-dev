@@ -1,0 +1,23 @@
+{
+	"name": "ds_silver_population_by_age",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_covid_reports",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "silver"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "population",
+				"fileSystem": "silver"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

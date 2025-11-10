@@ -3,34 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Execute raw ingest",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "Execute Ingest",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "pl_bronze_ingest_population",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
 				"name": "Execute Transformation",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Execute raw ingest",
+						"activity": "Execute Ingest",
 						"dependencyConditions": [
 							"Succeeded"
 						]
