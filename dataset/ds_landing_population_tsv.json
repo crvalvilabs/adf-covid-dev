@@ -13,6 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "population_by_age.tsv",
 				"container": "population"
 			},
 			"columnDelimiter": ",",
