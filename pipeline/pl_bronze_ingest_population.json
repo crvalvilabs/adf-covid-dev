@@ -193,14 +193,8 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_bronze_population_by_age",
-									"type": "DatasetReference",
-									"parameters": {
-										"pFolderName": {
-											"value": "@variables('vDate')",
-											"type": "Expression"
-										}
-									}
+									"referenceName": "ds_staging_population",
+									"type": "DatasetReference"
 								}
 							]
 						},
