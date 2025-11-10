@@ -136,30 +136,6 @@
 						}
 					},
 					{
-						"name": "File error",
-						"description": "Register a fail message",
-						"type": "Fail",
-						"dependsOn": [
-							{
-								"activity": "Find File",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"message": {
-								"value": "@activity('Find File').output.message",
-								"type": "Expression"
-							},
-							"errorCode": {
-								"value": "@activity('Find File').output.code",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "vDate",
 						"description": "Get de datetime in string format",
 						"type": "SetVariable",
@@ -281,14 +257,9 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "ds_bronze_population_by_age",
+											"referenceName": "ds_staging_population",
 											"type": "DatasetReference",
-											"parameters": {
-												"pFolderName": {
-													"value": "@variables('vDate')",
-													"type": "Expression"
-												}
-											}
+											"parameters": {}
 										}
 									]
 								},
@@ -362,7 +333,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_population_by_age_gz')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_population_by_age')]"
+				"[concat(variables('factoryId'), '/datasets/ds_staging_population')]"
 			]
 		},
 		{
@@ -902,15 +873,13 @@
 								}
 							},
 							"sink": {
-								"type": "DelimitedTextSink",
+								"type": "ParquetSink",
 								"storeSettings": {
 									"type": "AzureBlobFSWriteSettings",
 									"copyBehavior": "MergeFiles"
 								},
 								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
+									"type": "ParquetWriteSettings"
 								}
 							},
 							"enableStaging": false,
@@ -932,7 +901,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "ds_silver_population",
+								"referenceName": "ds_silver_population_by_age",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -950,7 +919,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_databricks_covid')]",
 				"[concat(variables('factoryId'), '/datasets/ds_staging_population')]",
-				"[concat(variables('factoryId'), '/datasets/ds_silver_population')]"
+				"[concat(variables('factoryId'), '/datasets/ds_silver_population_by_age')]"
 			]
 		},
 		{
@@ -1009,35 +978,11 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Execute raw ingest",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute Ingest",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pl_bronze_ingest_population",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
 						"name": "Execute Transformation",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute raw ingest",
+								"activity": "Execute Ingest",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1083,7 +1028,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_bronze_ingest_population')]",
 				"[concat(variables('factoryId'), '/pipelines/pl_population_data')]",
 				"[concat(variables('factoryId'), '/pipelines/pl_population_landing_to_bronze')]"
 			]
@@ -1700,46 +1644,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_bronze_population_by_age')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_dl_covid_reports",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"pFolderName": {
-						"type": "string"
-					}
-				},
-				"folder": {
-					"name": "bronze"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "population_by_age.tsv",
-						"folderPath": {
-							"value": "@dataset().pFolderName",
-							"type": "Expression"
-						},
-						"fileSystem": "bronze"
-					},
-					"columnDelimiter": "\t",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dl_covid_reports')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_bronze_population_by_age_gz')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1756,7 +1660,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "population_by_age.tsv.gz",
+						"fileName": "population_by_age.tsv",
+						"folderPath": "population",
 						"container": "population"
 					},
 					"columnDelimiter": "\t",
@@ -2162,7 +2067,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_silver_population')]",
+			"name": "[concat(parameters('factoryName'), '/ds_silver_population_by_age')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2174,18 +2079,15 @@
 					"name": "silver"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "Parquet",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "population.csv",
+						"fileName": "population_by_age.parquet",
 						"folderPath": "population",
 						"fileSystem": "silver"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
+					"compressionCodec": "snappy"
 				},
 				"schema": []
 			},
@@ -2532,6 +2434,36 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tggr_population_ingest')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_population_master",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('tggr_population_ingest_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_population_master')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_cases_deaths_bronze_to_staging')]",
@@ -3392,36 +3324,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_staging_testing')]",
 				"[concat(variables('factoryId'), '/datasets/ds_silver_testing')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tggr_population_ingest')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_population_master",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('tggr_population_ingest_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_population_master')]"
 			]
 		}
 	]

@@ -17,55 +17,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/df_hospital_admissions_weekly_to_silver')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "HospitalAdmissions"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_staging_admissions_weekly",
-								"type": "DatasetReference"
-							},
-							"name": "WeeklyAdmissionsSource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_silver_admissions_weekly",
-								"type": "DatasetReference"
-							},
-							"name": "WeeklyAdmissionsSink"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     wildcardPaths:['ecdc/weekly_admissions/weekly_admissions_staging.csv']) ~> WeeklyAdmissionsSource",
-						"WeeklyAdmissionsSource sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     partitionFileNames:['hospital_admissions_weekly_silver.parquet'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> WeeklyAdmissionsSink"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_population_by_age')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -559,9 +510,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_hospital_admissions_weekly_to_silver')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_hospital_admissions_bronze_to_staging')]",
@@ -769,35 +718,11 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Execute raw ingest",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute Ingest",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pl_bronze_ingest_population",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
 						"name": "Execute Transformation",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "Execute raw ingest",
+								"activity": "Execute Ingest",
 								"dependencyConditions": [
 									"Succeeded"
 								]
