@@ -56,15 +56,13 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings",
 							"copyBehavior": "MergeFiles"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
@@ -85,7 +83,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_silver_population",
+						"referenceName": "ds_silver_population_by_age",
 						"type": "DatasetReference"
 					}
 				]

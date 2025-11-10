@@ -13,6 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "population_by_age.parquet",
 				"folderPath": "population",
 				"fileSystem": "silver"
 			},
