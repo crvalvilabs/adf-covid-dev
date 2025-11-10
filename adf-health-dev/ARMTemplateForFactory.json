@@ -2061,7 +2061,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "population",
 						"container": "population"
 					},
 					"columnDelimiter": ",",
@@ -3111,7 +3110,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
-						"     wildcardPaths:['population/landing/population_by_age.tsv'],",
+						"     wildcardPaths:['population/population_by_age.tsv'],",
 						"     partitionBy('hash', 1)) ~> PopulationSource",
 						"PopulationSource sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
