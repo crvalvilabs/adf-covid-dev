@@ -477,7 +477,6 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "population_by_age.tsv.gz",
-						"folderPath": "landing",
 						"container": "population"
 					},
 					"columnDelimiter": "\t",
