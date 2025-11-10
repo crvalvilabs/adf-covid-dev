@@ -263,6 +263,30 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_azure_testing')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql_covid_dev",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "azure_sql"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "covid_reporting",
+					"table": "testing"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql_covid_dev')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_bronze_cases_deaths')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -770,35 +794,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_blob_covid_reporting')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_silver_admissions_daily')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_dl_covid_reports",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "silver"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "hospital_admissions_daily_silver.parquet",
-						"folderPath": "ecdc/hospital_admissions",
-						"fileSystem": "silver"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_dl_covid_reports')]"
 			]
 		}
 	]
