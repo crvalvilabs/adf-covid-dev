@@ -3,9 +3,16 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Execute Ingest",
+				"name": "Execute raw ingest",
 				"type": "ExecutePipeline",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Execute Ingest",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"secureInput": false
 				},
@@ -23,7 +30,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "Execute Ingest",
+						"activity": "Execute raw ingest",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -36,6 +43,22 @@
 				"typeProperties": {
 					"pipeline": {
 						"referenceName": "pl_population_data",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Ingest",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "pl_population_landing_to_bronze",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
