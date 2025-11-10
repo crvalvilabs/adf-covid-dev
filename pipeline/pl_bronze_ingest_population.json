@@ -74,30 +74,6 @@
 				}
 			},
 			{
-				"name": "File error",
-				"description": "Register a fail message",
-				"type": "Fail",
-				"dependsOn": [
-					{
-						"activity": "Find File",
-						"dependencyConditions": [
-							"Failed"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"message": {
-						"value": "@activity('Find File').output.message",
-						"type": "Expression"
-					},
-					"errorCode": {
-						"value": "@activity('Find File').output.code",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "vDate",
 				"description": "Get de datetime in string format",
 				"type": "SetVariable",
