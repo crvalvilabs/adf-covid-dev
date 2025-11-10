@@ -3045,7 +3045,7 @@
 						"     partitionBy('hash', 1)) ~> PopulationSource",
 						"PopulationSource sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     partitionFileNames:['population_by_age_bronze.tsv'],",
+						"     partitionFileNames:['population_by_age.tsv'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
