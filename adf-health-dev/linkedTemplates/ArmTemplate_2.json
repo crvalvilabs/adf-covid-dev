@@ -865,8 +865,7 @@
 				],
 				"type": "BlobEventsTrigger",
 				"typeProperties": {
-					"blobPathBeginsWith": "/population/blobs/landing",
-					"blobPathEndsWith": "population_by_age.tsv",
+					"blobPathBeginsWith": "/population/blobs/population_by_age.tsv",
 					"ignoreEmptyBlobs": true,
 					"scope": "[parameters('tggr_population_ingest_properties_typeProperties_scope')]",
 					"events": [
