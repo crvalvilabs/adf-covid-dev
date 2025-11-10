@@ -47,6 +47,10 @@
 			"type": "string",
 			"defaultValue": "sqladmin"
 		},
+		"tggr_population_ingest_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/88e694b8-ae19-43de-807e-fee3c629047a/resourceGroups/rg-covid-data-dev-eastus/providers/Microsoft.Storage/storageAccounts/stcovidreporting"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -141,6 +145,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"tggr_population_ingest_properties_typeProperties_scope": {
+						"value": "[parameters('tggr_population_ingest_properties_typeProperties_scope')]"
 					}
 				}
 			},

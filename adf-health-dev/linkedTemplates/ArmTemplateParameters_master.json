@@ -35,6 +35,9 @@
 		"sql_covid_dev_properties_typeProperties_userName": {
 			"value": "sqladmin"
 		},
+		"tggr_population_ingest_properties_typeProperties_scope": {
+			"value": "/subscriptions/88e694b8-ae19-43de-807e-fee3c629047a/resourceGroups/rg-covid-data-dev-eastus/providers/Microsoft.Storage/storageAccounts/stcovidreporting"
+		},
 		"containerUri": {
 			"value": ""
 		},
